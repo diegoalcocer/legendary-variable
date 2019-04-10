@@ -1,0 +1,72 @@
+﻿@model List<BAL.VariableDto>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+<script src="~/Scripts/jquery.tabledit.min.js"></script>
+
+<h2>Variables</h2>
+
+<table class="table table-responsive table-striped" id="variables-table">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Start Date</th>
+            <th>Value</th>
+            <th>Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td class="editable-text">@item.VariableId</td>
+                <td>@item.Name</td>
+                <td>@item.StartDate</td>
+                <td>@item.Value</td>
+                <td>@item.Type</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a class="btn btn-primary" href="@Url.Action("Create", "Variables")">Add New Variable</a>
+<script>
+    //$(".editable-text").editable("");
+    $("#variables-table").Tabledit(
+        {
+            url: "/Variables/Edit",
+            addButton: true,
+            columns: {
+                identifier: [0, 'VariableId'],
+                editable: [[1, 'Name'], [2, 'StartDate'], [3, 'Value'], [4, 'Type']]
+            },
+            onDraw: function () {
+                $('table tr td:nth-child(3) input').each(function () {
+                    $(this).datepicker({
+                        format: 'dd/mm/yyyy',
+                        endDate: '+0d',
+                        todayHighlight: true,
+                        autoclose: true
+                    });
+                });
+                console.log("On Draw");
+            },
+            onSuccess: function (data, textStatus, jqXHR) {
+                console.log('onSuccess(data, textStatus, jqXHR)');
+                console.log(data);
+                console.log(textStatus);
+                console.log(jqXHR);
+                $('.tabledit-deleted-row').remove();
+            },
+            onFail: function (jqXHR, textStatus, errorThrown) {
+                console.log('onFail(jqXHR, textStatus, errorThrown)');
+                console.log(jqXHR);
+                console.log(textStatus);
+                console.log(errorThrown);
+            },
+        });
+</script>
